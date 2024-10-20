@@ -1,10 +1,13 @@
-export class Document {
-    constructor(
-      public id: string,
-      public name: string,
-      public description: string,
-      public url: string,
-      public imageUrl: string,
-      public children: Document[] = []// This indicates it's an array of other `Contact` objects
-    ) {}
-  }
+    export class Document {
+      public id: string;
+      public name: string;
+      public url: string;
+      public children?: Document[]; // Optional field to handle nested documents
+    
+      constructor(id: string, name: string, url: string, children?: Document[]) {
+        this.id = id;
+        this.name = name;
+        this.url = url;
+        this.children = children;
+      }
+    }
