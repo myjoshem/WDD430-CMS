@@ -8,13 +8,9 @@ import { DocumentService } from '../../document.service';
 })
 export class DocumentItemComponent implements OnInit {
 @Input() document: Document;
-@Output() documentSelected = new EventEmitter<void>();
 
 constructor(private documentService: DocumentService) {}
 
 ngOnInit() {}
 
-onSelected(document: Document) {
-  this.documentService.documentSelectedEvent.emit(document);
-  }
 }

@@ -1,12 +1,14 @@
 import { Injectable, OnInit, EventEmitter } from '@angular/core';
 import { MOCKDOCUMENTS } from './MOCKDOCUMENTS';
 import { Document } from './document.model';
+import { findIndex } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DocumentService implements OnInit {
   documentSelectedEvent = new EventEmitter<Document>();
+  documentChangedEvent = new EventEmitter<Document[]>();
   documents: Document [] = [];
 
   constructor() {
@@ -25,9 +27,21 @@ getDocuments(): Document[] {
 
 // Method to find a specific document by id
 getDocument(id: string): Document | null {
-  // Use the find() method to search for the document with the matching id
-  const document = this.documents.find(d => d.id === id);
+  // Ensure both id types match (e.g., converting document.id to string)
+  const document = this.documents.find(d => d.id.toString() === id);
+  console.log('Documents Array:', this.documents);
   return document ? document : null; // Return the document or null if not found
 }
 
+deleteDocument(document: Document) {
+  if (!document) {
+     return;
+  }
+  const pos = this.documents.indexOf(document);
+  if (pos < 0) {
+     return;
+  }
+  this.documents.splice(pos, 1);
+  this.documentChangedEvent.emit(this.documents.slice());
+}
 }

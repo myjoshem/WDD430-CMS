@@ -13,8 +13,8 @@
           <img [src]="contact.imageUrl" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;">
         </div>
         <div class="col-xs-10 text-right">
-          <a href="#" class="btn btn-primary" style="margin-right: 5px;">Edit</a>
-          <a href="#" class="btn btn-danger">Delete</a>
+          <a (click)="onEditDocument();" class="btn btn-primary" style="margin-right: 5px;">Edit</a>
+          <a (click)="onDelete();" class="btn btn-danger">Delete</a>
         </div>
       </div>
     </div>
