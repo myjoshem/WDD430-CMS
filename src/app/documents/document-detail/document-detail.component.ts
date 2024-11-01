@@ -8,7 +8,7 @@ import { WindRefService } from 'src/app/wind-ref.service';
 @Component({
   selector: 'cms-document-detail',
   templateUrl: './document-detail.component.html',
-  styleUrls: ['./document-detail.component.css']
+  styleUrls: ['./document-detail.component.css'],
 })
 export class DocumentDetailComponent implements OnInit {
   document: Document;
@@ -29,7 +29,7 @@ export class DocumentDetailComponent implements OnInit {
     // Subscribe to route params to fetch the document based on the unique id
     this.routeSub = this.route.params.subscribe((params: Params) => {
       this.id = params['id']; // Retrieve the unique id as a string from route params
-      
+
       // Fetch the document by its unique id (no need for incrementing)
       this.document = this.documentService.getDocument(this.id);
 
@@ -42,12 +42,13 @@ export class DocumentDetailComponent implements OnInit {
     console.log('Document ID:', this.id, 'Fetched Document:', this.document);
     this.documentService.deleteDocument(this.document);
     this.router.navigate(['/documents']);
- }
+  }
 
   onEditDocument() {
-    this.router.navigate(['edit'], {relativeTo: this.route});
-    // alt this.router.navigate(['../', this.id, 'edit'], {relativeTo: this.route});
-
+    this.router.navigate(['edit'], {
+      relativeTo: this.route,
+      queryParams: { isNew: false },
+    });
   }
 
   onView() {

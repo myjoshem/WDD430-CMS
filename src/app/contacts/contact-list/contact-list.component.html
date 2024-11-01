@@ -1,12 +1,13 @@
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
       <h3 class="pull-left" style="margin: 0;">Contacts</h3>
-      <a [routerLink]="['new']"class="btn btn-success pull-right">New Contact</a>
+      <a (click)="onAddContact()" class="btn btn-success pull-right">New Contact</a>
     </div>
     <div class="panel-body">
       <div class="list-group">
         <cms-contact-item *ngFor="let contactEl of contacts"
-        [contact]="contactEl"></cms-contact-item>
+        [contact]="contactEl"
+        [id]="contactEl.id"></cms-contact-item>
       </div>
     </div>
   </div>
