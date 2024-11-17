@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Document } from './document.model';
 import { DocumentService } from './document.service';
 
 @Component({

@@ -1,29 +1,59 @@
 <div class="panel panel-default">
-    <!-- Panel Header -->
-    <div class="panel-heading">
-      <!-- Row 1: Name of the Contact -->
-      <div class="row">
-        <div class="col-xs-12">
-          <h3 style="margin: 0;">{{ contact.name }}</h3>
-        </div>
-      </div>
-      <!-- Row 2: Image and Buttons -->
-      <div class="row">
-        <div class="col-xs-2">
-          <img [src]="contact.imageUrl" alt="{{ contact.name }}" class="img-responsive" style="max-height: 50px;">
-        </div>
-        <div class="col-xs-10 text-right">
-          <a (click)="onEditDocument();" class="btn btn-primary" style="margin-right: 5px;">Edit</a>
-          <a (click)="onDelete();" class="btn btn-danger">Delete</a>
-        </div>
+  <!-- Panel Header -->
+  <div class="panel-heading">
+    <!-- Row 1: Name of the Contact -->
+    <div class="row">
+      <div class="col-xs-12">
+        <h3 style="margin: 0;">{{ contact.name }}</h3>
       </div>
     </div>
-    
-    <!-- Panel Body -->
-    <div class="panel-body">
-      <!-- Display email and phone -->
-      <p><span style="font-weight: bold;">Phone: </span>{{ contact.phone }}</p>
-      <p><span style="font-weight: bold;">Email: </span>{{ contact.email }}</p>
+    <!-- Row 2: Image and Buttons -->
+    <div class="row">
+      <div class="col-xs-2">
+        <img [src]="contact.imageUrl" alt="{{ contact?.name }}" class="img-responsive" style="max-height: 50px;">
+      </div>
+      <div class="col-xs-10 text-right">
+        <a (click)="onEditContact();" class="btn btn-primary" style="margin-right: 5px;">Edit</a>
+        <a (click)="onDelete();" class="btn btn-danger">Delete</a>
+      </div>
     </div>
   </div>
-  
+
+  <!-- Panel Body -->
+  <div class="panel-body">
+    <!-- Display Name -->
+    <p><span style="font-weight: bold;">Name: </span>{{ contact.name }}</p>
+    <!-- Display Email -->
+    <p><span style="font-weight: bold;">Email: </span>{{ contact.email }}</p>
+    <!-- Display Phone -->
+    <p><span style="font-weight: bold;">Phone: </span>{{ contact.phone }}</p>
+    <!-- Display Image URL -->
+    <p><span style="font-weight: bold;">Image URL: </span>{{ contact.imageUrl }}</p>
+    <!-- Display Group Contacts -->
+    <div>
+      <span style="font-weight: bold;">Group Contacts:</span>
+      <div *ngIf="hasGroup; else noGroupMessage">
+        <h3>Group Contacts:</h3>
+        <ul class="list-group">
+          <li *ngFor="let groupContact of contact.group" class="list-group-item">
+            <div class="pull-left">
+              <h4 class="list-group-item-heading">{{ groupContact.name }}</h4>
+            </div>
+            <span class="pull-right">
+              <img 
+                [src]="groupContact.imageUrl" 
+                alt="{{ groupContact.name }}" 
+                class="img-responsive" 
+                style="max-height: 50px;"
+              >
+            </span>
+            <div class="clearfix"></div>
+          </li>
+        </ul>
+      </div>
+      <ng-template #noGroupMessage>
+        <p>This contact has no group contacts assigned.</p>
+      </ng-template>
+    </div>
+  </div>
+</div>

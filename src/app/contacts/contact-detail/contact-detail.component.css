@@ -1,0 +1,59 @@
+.group-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-height: 3rem;
+    padding: 0.5rem;
+    border: 1px dashed #ccc;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+  }
+  
+  .group-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #ffffff;
+  }
+  
+  .contact-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
+  .contact-name {
+    flex-grow: 1;
+    font-size: 1rem;
+  }
+  
+  .delete-button {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .drag-msg {
+    font-size: 0.9rem;
+    color: #999;
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+  
+  @media (max-width: 768px) {
+    .group-item {
+      flex-direction: row;
+    }
+  
+    .contact-name {
+      font-size: 0.9rem;
+    }
+  
+    .delete-button {
+      font-size: 0.8rem;
+    }
+  }
+  

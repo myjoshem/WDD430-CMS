@@ -1,63 +1,95 @@
 <div class="panel panel-default">
-    <!-- Panel heading to display "Add New Document" or "Edit Document" based on the mode -->
-    <div class="panel-heading">
-      <h3 class="panel-title">{{ isNewDocument ? 'Add New Document' : 'Edit Document' }}</h3>
-    </div>
-  
-    <div class="panel-body">
-      <!-- Form that will submit by calling the onSave() method -->
-      <form (ngSubmit)="onSave()">
-        <!-- Document Name Input Field -->
-        <div class="form-group">
-          <label for="name">Document Name</label>
-          <!--
-            - Input field bound to the `document.name` property.
-            - `[(ngModel)]` enables two-way data binding, so any changes in the input
-              will be reflected in the `document.name` property in the component.
-            - `name="name"` is required for Angular's form control to track this input.
-            - `required` ensures this field must be filled before the form can be submitted.
-          -->
-          <input 
-            type="text" 
-            id="name" 
-            class="form-control" 
-            [(ngModel)]="document.name" 
-            name="name" 
-            placeholder="Enter document name" 
-            required 
-          />
-        </div>
-        
-        <!-- Document URL Input Field -->
-        <div class="form-group">
-          <label for="url">Document URL</label>
-          <!--
-            - Input field bound to the `document.url` property.
-            - `[(ngModel)]` enables two-way data binding, linking the input field
-              to the `document.url` property in the component.
-            - `name="url"` is needed for form tracking by Angular.
-            - `required` attribute ensures that this URL field is filled before form submission.
-            - `type="url"` makes it clear that a URL format is expected, aiding in form validation.
-          -->
-          <input 
-            type="url" 
-            id="url" 
-            class="form-control" 
-            [(ngModel)]="document.url" 
-            name="url" 
-            placeholder="Enter document URL" 
-            required 
-          />
-        </div>
-        
-        <!-- Save Button -->
-        <!--
-          - Button to save the document.
-          - (click)="onSave()" calls the `onSave()` method when clicked.
-          - onSave() determines whether to add or update the document based on `isNewDocument`.
-          - Button type is "submit" to also trigger the (ngSubmit) directive on the form.
-        -->
-        <button type="submit" class="btn btn-primary" (click)="onSave()">Save</button>
-      </form>
-    </div>
+  <!-- Panel heading to display "Add New Document" or "Edit Document" based on the mode -->
+  <div class="panel-heading">
+    <h3 class="panel-title">{{ isNewDocument ? 'Add New Document' : 'Edit Document' }}</h3>
   </div>
+
+  <div class="panel-body">
+    <!-- Form that will submit by calling the onSave() method -->
+    <form (ngSubmit)="onSave(documentForm)" #documentForm="ngForm">
+      <!-- Document Name Input Field -->
+      <div class="form-group">
+        <label for="name">Document Title</label>
+        <!--
+          - Input field bound to the `document.name` property.
+          - `[(ngModel)]` enables two-way data binding.
+          - `name="name"` is required for Angular's form control to track this input.
+          - `required` ensures this field must be filled before the form can be submitted.
+        -->
+        <input
+          type="text"
+          id="name"
+          class="form-control"
+          [(ngModel)]="document.name"
+          name="name"
+          placeholder="Enter document title"
+          required
+          #title="ngModel"
+          [ngClass]="{ 'is-invalid': title.invalid && (title.dirty || title.touched) }"
+        />
+        <!-- Title Error -->
+        <div *ngIf="title.invalid && (title.dirty || title.touched)" class="error alert alert-danger">
+          A Document Title is required.
+        </div>
+      </div>
+
+      <!-- Document Description Input Field -->
+      <div class="form-group">
+        <label for="description">Document Description</label>
+        <input
+          type="text"
+          id="description"
+          class="form-control"
+          [(ngModel)]="document.description"
+          name="description"
+          placeholder="Enter document description"
+        />
+      </div>
+
+      <!-- Document URL Input Field -->
+      <div class="form-group">
+        <label for="url">Document URL</label>
+        <!--
+          - Input field bound to the `document.url` property.
+          - `[(ngModel)]` enables two-way data binding.
+          - `name="url"` is needed for form tracking by Angular.
+          - `required` ensures that this URL field is filled before form submission.
+          - `type="url"` expects a URL format.
+        -->
+        <input
+          type="url"
+          id="url"
+          class="form-control"
+          [(ngModel)]="document.url"
+          name="url"
+          placeholder="Enter document URL"
+          required
+          #url="ngModel"
+          [ngClass]="{ 'is-invalid': url.invalid && (url.dirty || url.touched) }"
+        />
+        <!-- URL Error -->
+        <div *ngIf="url.invalid && (url.dirty || url.touched)" class="error alert alert-danger">
+          A valid Document URL is required.
+        </div>
+      </div>
+
+      <!-- Save and Cancel Buttons -->
+      <div class="form-group">
+        <button
+          type="submit"
+          class="btn btn-success button-spacing"
+          [disabled]="!documentForm.valid"
+        >
+          Save
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          (click)="onCancel()"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

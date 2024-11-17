@@ -1,4 +1,4 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable, OnInit } from '@angular/core';
 import { Contact } from './contact.model';
 import { MOCKCONTACTS } from './MOCKCONTACTS';
 import { Subject } from 'rxjs';
@@ -6,7 +6,7 @@ import { Subject } from 'rxjs';
 @Injectable({
   providedIn: 'root',
 })
-export class ContactService {
+export class ContactService implements OnInit {
   contactSelectedEvent = new EventEmitter<Contact>();
   contactListChangedEvent = new Subject<Contact[]>();
   contacts: Contact[] = [];
@@ -17,9 +17,11 @@ export class ContactService {
     this.maxContactId = this.getMaxId();
   }
 
+  ngOnInit() {}
+
   // Method to return a copy of the contacts array
   getContacts(): Contact[] {
-    return [...this.contacts]; // Use spread syntax for a shallow copy
+    return this.contacts.slice();
   }
 
   // Method to find a specific contact by id
@@ -79,6 +81,6 @@ export class ContactService {
     if (pos < 0) return;
 
     this.contacts.splice(pos, 1);
-    this.contactListChangedEvent.next([...this.contacts]); // Use Subject to broadcast the updated list
+    this.contactListChangedEvent.next(this.contacts.slice()); // Use Subject to broadcast the updated list
   }
 }

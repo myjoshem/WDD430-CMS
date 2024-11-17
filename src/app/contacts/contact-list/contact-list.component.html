@@ -1,14 +1,21 @@
 <div class="panel panel-default">
-    <div class="panel-heading clearfix">
-      <h3 class="pull-left" style="margin: 0;">Contacts</h3>
-      <a (click)="onAddContact()" class="btn btn-success pull-right">New Contact</a>
-    </div>
-    <div class="panel-body">
-      <div class="list-group">
-        <cms-contact-item *ngFor="let contactEl of contacts"
-        [contact]="contactEl"
-        [id]="contactEl.id"></cms-contact-item>
+  <div class="panel-heading clearfix">
+    <h3 class="pull-left" style="margin: 0;">Contacts</h3>
+    <a (click)="onAddContact()" class="btn btn-success pull-right">New Contact</a>
+  </div>
+  <div class="panel-body">
+    <div class="list-group">
+      <!-- Make each contact draggable -->
+      <div 
+        *ngFor="let contactEl of contacts" 
+        cdkDrag 
+        [cdkDragData]="contactEl"
+        class="contact-item">
+        <cms-contact-item 
+          [contact]="contactEl"
+          [id]="contactEl.id">
+        </cms-contact-item>
       </div>
     </div>
   </div>
-  
+</div>
