@@ -32,20 +32,20 @@
               <div class="form-group col-xs-12">
                   <label for="email">Email</label>
                   <input 
-                      type="email" 
-                      id="email" 
-                      class="form-control" 
-                      [(ngModel)]="contact.email" 
-                      name="email" 
-                      placeholder="Enter contact email" 
-                      required 
-                      pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}$"
-                      #email="ngModel"
-                      [ngClass]="{ 'is-invalid': email.invalid && (email.dirty || email.touched) }"
-                  />
-                  <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error alert alert-danger">
-                      Valid email is required, ie. name&#64;email.com
-                  </div>
+                  type="email" 
+                  id="email" 
+                  class="form-control" 
+                  [(ngModel)]="contact.email" 
+                  name="email" 
+                  placeholder="Enter contact email" 
+                  required 
+                  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,3}" 
+                  #email="ngModel"
+                  [ngClass]="{ 'is-invalid': email.invalid && (email.dirty || email.touched) }"
+                />
+                <div *ngIf="email.invalid && (email.dirty || email.touched)" class="error alert alert-danger">
+                  Valid email is required, i.e., name&#64;email.com
+                </div>
               </div>
           </div>
 
@@ -54,19 +54,19 @@
               <div class="form-group col-xs-12">
                   <label for="phone">Phone</label>
                   <input 
-                      type="text" 
-                      id="phone" 
-                      class="form-control" 
-                      [(ngModel)]="contact.phone" 
-                      name="phone"
-                      #phone="ngModel" 
-                      placeholder="Enter contact phone" 
-                      pattern="\D*([2-9]\d{2})(\D*)([2-9]\d{2})(\D*)(\d{4})\D*"
-                      [ngClass]="{ 'is-invalid': phone.invalid && (phone.dirty || phone.touched) }"
-                  />
-                  <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="error alert alert-danger">
-                      Enter a valid phone number (e.g., 223-456-7890, (823) 456-7890, 923.456.7890).
-                  </div>
+                  type="text" 
+                  id="phone" 
+                  class="form-control" 
+                  [(ngModel)]="contact.phone" 
+                  name="phone" 
+                  placeholder="Enter contact phone" 
+                  pattern="\D*([2-9]\d{2})\D*([2-9]\d{2})\D*(\d{4})\D*" 
+                  #phone="ngModel"
+                  [ngClass]="{ 'is-invalid': phone.invalid && (phone.dirty || phone.touched) }"
+                />
+                <div *ngIf="phone.invalid && (phone.dirty || phone.touched)" class="error alert alert-danger">
+                  Enter a valid phone number (e.g., 223-456-7890, (823) 456-7890, 923.456.7890).
+                </div>
               </div>
           </div>
 

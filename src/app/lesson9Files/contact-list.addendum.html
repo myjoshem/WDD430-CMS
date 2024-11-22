@@ -1,0 +1,43 @@
+<div class="row">
+  <div class="col-xs-12">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <div class="row">
+          <span class="title pad-left-right">Contacts</span>
+        </div>
+        <div class="row">
+          <div class="input-group pull-left pad-left-right col-xs-7">
+            <!-- Add the search box input field here -->
+            <div class="glyphicon glyphicon-search input-group-addon" (click)="search(searchBox.value)"></div>
+          </div>
+          <div class="pull-right pad-left-right">
+            <a class="btn btn-success" [routerLink]="['new']">New Contact</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+//old code
+<div class="panel panel-default">
+  <div class="panel-heading clearfix">
+    <h3 class="pull-left" style="margin: 0;">Contacts</h3>
+    <a (click)="onAddContact()" class="btn btn-success pull-right">New Contact</a>
+  </div>
+  <div class="panel-body">
+    <div class="list-group">
+      <!-- Make each contact draggable -->
+      <div 
+        *ngFor="let contactEl of contacts" 
+        cdkDrag 
+        [cdkDragData]="contactEl"
+        class="contact-item">
+        <cms-contact-item 
+          [contact]="contactEl"
+          [id]="contactEl.id">
+        </cms-contact-item>
+      </div>
+    </div>
+  </div>
+</div>

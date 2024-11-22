@@ -1,4 +1,11 @@
-import { Component, ViewChild, ElementRef, EventEmitter, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  ViewChild,
+  ElementRef,
+  EventEmitter,
+  OnInit,
+  Output,
+} from '@angular/core';
 import { Message } from '../message.model';
 import { Contact } from 'src/app/contacts/contact.model';
 import { MessageService } from '../message.service';
@@ -7,7 +14,7 @@ import { ContactService } from 'src/app/contacts/contact.service';
 @Component({
   selector: 'cms-message-edit',
   templateUrl: './message-edit.component.html',
-  styleUrls: ['./message-edit.component.css']
+  styleUrls: ['./message-edit.component.css'],
 })
 export class MessageEditComponent implements OnInit {
   @ViewChild('subject') subjectInputRef: ElementRef;
@@ -15,46 +22,42 @@ export class MessageEditComponent implements OnInit {
 
   @Output() addMessageEvent = new EventEmitter<Message>();
 
-  currentSender: Contact; // Declare currentSender as a class property
+  currentSenderName: string = 'Michelle Markham'; // Hardcoded sender name for new messages
 
-  constructor(private messageService: MessageService, private contactService: ContactService) {}
+  constructor(
+    private messageService: MessageService,
+    private contactService: ContactService
+  ) {}
 
   ngOnInit() {
-    // Assign the contact with id '99' inside ngOnInit
-    const senderID = '99';
-    this.currentSender = this.contactService.getContact(senderID);
-    
-    if (this.currentSender) {
-      console.log('Current sender:', this.currentSender.name); // Log to verify the contact is retrieved
-    } else {
-      console.log('Contact not found');
-    }
+    // No need to fetch sender with ID '99' since it's hardcoded for new messages
+    console.log('Current sender for new messages:', this.currentSenderName);
   }
 
   onSendMessage() {
-    // Ensure currentSender is available before creating the message
-    if (this.currentSender) {
-      // Retrieve input values
-      const subjectValue = this.subjectInputRef.nativeElement.value;
-      const msgTextValue = this.msgTextInputRef.nativeElement.value;
-  
-      // Create new Message object (use sender ID instead of name)
-      const newMessage = new Message('44', subjectValue, msgTextValue, this.currentSender.id); 
-  
-      console.log('Message sender ID:', this.currentSender.id); // Log to verify correct sender
-  
-      // Call addMessage() method from MessageService
-      this.messageService.addMessage(newMessage);
-  
-      // Emit the new message to the parent component
-      this.addMessageEvent.emit(newMessage);
-  
-      // Clear the input fields
-      this.onClear();
-    } else {
-      console.log('No sender found, cannot send the message.');
-    }
-  }  
+    // Retrieve input values
+    const subjectValue = this.subjectInputRef.nativeElement.value;
+    const msgTextValue = this.msgTextInputRef.nativeElement.value;
+
+    // Create new Message object with hardcoded sender name
+    const newMessage = new Message(
+      'Michelle Markham', // Use a unique ID for the new message
+      subjectValue,
+      msgTextValue,
+      this.currentSenderName // Use the hardcoded sender name
+    );
+
+    console.log('New message:', newMessage);
+
+    // Call addMessage() method from MessageService
+    this.messageService.addMessage(newMessage);
+
+    // Emit the new message to the parent component
+    this.addMessageEvent.emit(newMessage);
+
+    // Clear the input fields
+    this.onClear();
+  }
 
   onClear() {
     // Clear input field values

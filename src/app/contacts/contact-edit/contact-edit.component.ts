@@ -82,8 +82,7 @@ export class ContactEditComponent implements OnInit, OnDestroy {
       const originalContact = this.contactService.getContact(this.contact.id);
       this.contactService.updateContact(originalContact, updatedContact);
     }
-
-    this.router.navigate(['/contacts']);
+    this.onCancel();
   }
 
   isInvalidContact(newContact: Contact): boolean {

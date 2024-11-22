@@ -70,8 +70,8 @@ export class DocumentEditComponent implements OnInit, OnDestroy {
       );
       this.documentService.updateDocument(originalDocument, updatedDocument);
     }
-
-    this.router.navigate(['/documents']);
+    this.documentForm.reset();
+    this.onCancel();
   }
 
   onCancel() {

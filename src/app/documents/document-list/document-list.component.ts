@@ -13,15 +13,19 @@ export class DocumentListComponent implements OnInit, OnDestroy {
   documents: Document[];
   docsSubscription: Subscription;
 
-  constructor(private documentService: DocumentService, private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private documentService: DocumentService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
   ngOnInit() {
-    this.documents = this.documentService.getDocuments();
-    // Subscribe to document changesEvent
+    this.documentService.getDocuments(); // Triggers the HTTP request and updates the service's internal state
     this.docsSubscription =
       this.documentService.documentListChangedEvent.subscribe(
         (documents: Document[]) => {
-          this.documents = documents; // Update documents list when it changes
+          this.documents = documents; // Update local documents list when the event is emitted
+          this.router.navigate(['/documents']);
         }
       );
   }
@@ -33,5 +37,4 @@ export class DocumentListComponent implements OnInit, OnDestroy {
   onAddDocument() {
     this.router.navigate(['/documents/new'], { queryParams: { isNew: true } });
   }
-
 }

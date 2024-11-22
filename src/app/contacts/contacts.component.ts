@@ -9,5 +9,7 @@ import { ContactService } from './contact.service';
 export class ContactsComponent implements OnInit {
   constructor(private contactService: ContactService) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    
+  }
 }

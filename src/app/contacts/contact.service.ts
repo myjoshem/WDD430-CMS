@@ -1,30 +1,60 @@
 import { EventEmitter, Injectable, OnInit } from '@angular/core';
 import { Contact } from './contact.model';
-import { MOCKCONTACTS } from './MOCKCONTACTS';
-import { Subject } from 'rxjs';
+import { BehaviorSubject, tap } from 'rxjs';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContactService implements OnInit {
+  private firebaseUrl =
+    'https://cmsproject-fall2024-default-rtdb.firebaseio.com/contacts.json';
   contactSelectedEvent = new EventEmitter<Contact>();
-  contactListChangedEvent = new Subject<Contact[]>();
+  contactListChangedEvent = new BehaviorSubject<Contact[]>([]);
   contacts: Contact[] = [];
-  private maxContactId: number;
+  private maxContactId: number = 0;
+  private isFetching = false; // Prevent redundant fetching
 
-  constructor() {
-    this.contacts = MOCKCONTACTS;
+  constructor(private http: HttpClient) {
+    this.getContacts();
     this.maxContactId = this.getMaxId();
   }
 
   ngOnInit() {}
 
-  // Method to return a copy of the contacts array
-  getContacts(): Contact[] {
-    return this.contacts.slice();
+  storeContacts(contacts: Contact[]): void {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    const httpOptions = { headers };
+
+    this.http
+      .put<Contact[]>(this.firebaseUrl, contacts, httpOptions)
+      .subscribe();
+    //this updates the list in the browser immediately
+    this.setContacts(contacts);
   }
 
-  // Method to find a specific contact by id
+  getContacts() {
+    if (this.isFetching) return;
+
+    this.isFetching = true;
+    this.http
+      .get<Contact[]>(this.firebaseUrl)
+      .pipe(
+        tap((contacts) => {
+          this.setContacts(contacts || []);
+        })
+      )
+      .subscribe(
+        () => {
+          this.isFetching = false;
+        },
+        (error: any) => {
+          console.error('Error getting contacts:', error);
+          this.isFetching = false;
+        }
+      );
+  }
+
   getContact(id: string): Contact | null {
     return (
       this.contacts.find((contact) => contact.id.toString() === id) || null
@@ -34,7 +64,8 @@ export class ContactService implements OnInit {
   getMaxId() {
     let maxId = 0;
     this.contacts.forEach((doc) => {
-      const currentId = parseInt(doc.id, 10);
+      const currentId =
+        typeof doc.id === 'string' ? parseInt(doc.id, 10) : doc.id;
       if (currentId > maxId) {
         maxId = currentId;
       }
@@ -43,35 +74,23 @@ export class ContactService implements OnInit {
   }
 
   addContact(newContact: Contact) {
-    //check to see if there is information passed in newContact
-    if (!newContact) {
-      return;
-    }
-    // make sure to check on maxID, then icrement to get id for new contact
-    this.maxContactId = this.getMaxId();
-    this.maxContactId++;
-    //the id in contact model is string, so we need to save the new id as a string
+    if (!newContact) return;
+
+    this.maxContactId = this.getMaxId() + 1;
     newContact.id = this.maxContactId.toString();
-    //push the new contact object, incuding the new id to a session copy of the contact list
-    //this will not persist or copy to MOCKCONTACTS
     this.contacts.push(newContact);
-    const contactsListClone = this.contacts.slice();
-    //then pass new list to changed even for routing
-    this.contactListChangedEvent.next(contactsListClone);
+    this.storeContacts(this.contacts);
   }
 
   updateContact(originalContact: Contact, newContact: Contact) {
-    if (!originalContact || !newContact) {
-      return;
-    }
+    if (!originalContact || !newContact) return;
+
     const pos = this.contacts.indexOf(originalContact);
-    if (pos < 0) {
-      return;
-    }
+    if (pos < 0) return;
+
     newContact.id = originalContact.id;
     this.contacts[pos] = newContact;
-    const contactsListClone = this.contacts.slice();
-    this.contactListChangedEvent.next(contactsListClone);
+    this.storeContacts(this.contacts);
   }
 
   deleteContact(contact: Contact): void {
@@ -81,6 +100,11 @@ export class ContactService implements OnInit {
     if (pos < 0) return;
 
     this.contacts.splice(pos, 1);
-    this.contactListChangedEvent.next(this.contacts.slice()); // Use Subject to broadcast the updated list
+    this.storeContacts(this.contacts);
+  }
+  //we call this to set the local contacts after any change and then call it so the list in the browser is updated
+  setContacts(contacts: Contact[]) {
+    this.contacts = contacts;
+    this.contactListChangedEvent.next(this.contacts.slice());
   }
 }

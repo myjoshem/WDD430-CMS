@@ -1,13 +1,35 @@
 <div class="panel panel-default">
-  <div class="panel-heading clearfix">
-    <h3 class="pull-left" style="margin: 0;">Contacts</h3>
-    <a (click)="onAddContact()" class="btn btn-success pull-right">New Contact</a>
+  <div class="panel-heading">
+    <h3><span class="pad-left-right title">Contacts</span></h3>
+    <div class="row align-items-center">
+      <div class="col-xs-12 pad-left-right">
+        <!-- Search Box -->
+        <div class="input-group">
+          <input 
+            type="text"
+            id="searchBox" 
+            #searchBox 
+            (keyup)="search(searchBox.value)" 
+            class="form-control" 
+            placeholder="Enter a search value">
+          <span 
+            class="glyphicon glyphicon-search input-group-addon" 
+            (click)="search(searchBox.value)">
+          </span>
+          <div class="col-xs-3 text-right">
+            <!-- New Contact Button -->
+            <a (click)="onAddContact()" class="btn btn-success">New Contact</a>
+          </div>
+        </div>
+      </div>
+      
+    </div>
   </div>
   <div class="panel-body">
     <div class="list-group">
       <!-- Make each contact draggable -->
       <div 
-        *ngFor="let contactEl of contacts" 
+        *ngFor="let contactEl of contacts | contactsFilter:term" 
         cdkDrag 
         [cdkDragData]="contactEl"
         class="contact-item">

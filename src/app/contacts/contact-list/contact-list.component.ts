@@ -12,6 +12,7 @@ import { Subscription } from 'rxjs';
 export class ContactListComponent implements OnInit, OnDestroy {
   contacts: Contact[];
   contactsSubscription: Subscription;
+  term: string;
 
   constructor(
     private contactService: ContactService,
@@ -21,21 +22,37 @@ export class ContactListComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     //initialize and retrieve list of contacts
-    this.contacts = this.contactService.getContacts();
+    this.contactService.getContacts();
+    // Set `term` to an empty string to ensure the filter displays all contacts
+    this.term = '';
 
-    // Subscribe to document changes
+    // Optionally, focus the search box when the page loads
+    setTimeout(() => {
+      const searchBox = document.querySelector<HTMLInputElement>('#searchBox');
+      if (searchBox) {
+        searchBox.focus();
+      }
+    });
+
+    // Subscribe to contact changes
     this.contactsSubscription =
       this.contactService.contactListChangedEvent.subscribe(
         (contacts: Contact[]) => {
           this.contacts = contacts; // Update contacts list when it changes
+          this.router.navigate(['/contacts']);
         }
       );
   }
+
   ngOnDestroy(): void {
     this.contactsSubscription.unsubscribe();
   }
 
   onAddContact() {
     this.router.navigate(['/contacts/new'], { queryParams: { isNew: true } });
+  }
+
+  search(value: string) {
+    this.term = value;
   }
 }
