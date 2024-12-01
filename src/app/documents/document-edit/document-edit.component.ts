@@ -20,6 +20,7 @@ export class DocumentEditComponent implements OnInit, OnDestroy {
 
   private routeSubscription: Subscription; // To handle route subscriptions
   private queryParamsSubscription: Subscription; // To handle query params subscriptions
+  private documentSubscription: Subscription; // To handle document fetch subscription
 
   constructor(
     private route: ActivatedRoute,
@@ -37,19 +38,34 @@ export class DocumentEditComponent implements OnInit, OnDestroy {
           // Subscribe to route parameters to get the document ID
           this.routeSubscription = this.route.params.subscribe((params) => {
             const id = params['id'];
-            const existingDocument = this.documentService.getDocument(id);
 
-            if (existingDocument) {
-              // Clone the document to prevent mutation
-              this.document = {
-                ...existingDocument,
-                children: existingDocument.children
-                  ? existingDocument.children.map((child) => ({ ...child }))
-                  : [],
-              };
-            } else {
-              console.error(`Document with ID ${id} not found.`);
-            }
+            // Fetch document as an Observable and handle it
+            this.documentSubscription = this.documentService
+              .getDocument(id)
+              .subscribe(
+                (existingDocument: Document) => {
+                  if (existingDocument) {
+                    this.originalDocument = existingDocument;
+                    // Clone the document to prevent mutation
+                    this.document = {
+                      ...existingDocument,
+                      children: existingDocument.children
+                        ? existingDocument.children.map((child) => ({
+                            ...child,
+                          }))
+                        : [],
+                    };
+                  } else {
+                    console.error(`Document with ID ${id} not found.`);
+                  }
+                },
+                (error) => {
+                  console.error(
+                    `Error fetching document with ID ${id}:`,
+                    error
+                  );
+                }
+              );
           });
         }
       }
@@ -57,21 +73,42 @@ export class DocumentEditComponent implements OnInit, OnDestroy {
   }
 
   onSave(form: NgForm) {
-    const updatedDocument = {
+    const updatedDocument: Document = {
       ...this.document,
       ...form.value,
     };
 
     if (this.isNewDocument) {
-      this.documentService.addDocument(updatedDocument);
+      this.documentService.addDocument(updatedDocument)?.subscribe({
+        next: (response) => {
+          console.log('Document added successfully:', response);
+          this.documentService.getDocuments(); // Refresh the list
+          this.onCancel(); // Navigate away after successful save
+        },
+        error: (error) => {
+          console.error('Error adding document:', error);
+        },
+        complete: () => {
+          console.log('Add document operation completed.');
+        },
+      });
     } else {
-      const originalDocument = this.documentService.getDocument(
-        this.document.id
-      );
-      this.documentService.updateDocument(originalDocument, updatedDocument);
+      this.documentService
+        .updateDocument(this.originalDocument, updatedDocument)
+        ?.subscribe({
+          next: (response) => {
+            console.log('Document updated successfully:', response);
+            this.documentService.getDocuments(); // Refresh the list
+            this.onCancel(); // Navigate away after successful update
+          },
+          error: (error) => {
+            console.error('Error updating document:', error);
+          },
+          complete: () => {
+            console.log('Update document operation completed.');
+          },
+        });
     }
-    this.documentForm.reset();
-    this.onCancel();
   }
 
   onCancel() {
@@ -85,6 +122,9 @@ export class DocumentEditComponent implements OnInit, OnDestroy {
     }
     if (this.queryParamsSubscription) {
       this.queryParamsSubscription.unsubscribe();
+    }
+    if (this.documentSubscription) {
+      this.documentSubscription.unsubscribe();
     }
   }
 }

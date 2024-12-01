@@ -1,64 +1,108 @@
 const express = require('express');
 const router = express.Router();
-const Document = require('../models/document'); // Import your Mongoose model
+const sequenceGenerator = require('./sequenceGenerator');
+const Document = require('../models/document');
 
-// GET: Get all documents
+// GET: Retrieve all documents
 router.get('/', async (req, res) => {
   try {
-    const documents = await Document.find(); // Query all documents
-    res.status(200).json(documents); // Return documents in JSON format
+    const documents = await Document.find();
+    res.status(200).json({
+      message: 'Documents fetched successfully!',
+      documents: documents,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Failed to fetch documents', error });
+    res.status(500).json({
+      message: 'An error occurred while fetching documents.',
+      error: error,
+    });
   }
 });
 
-// GET: Get a document by ID
+// GET: Retrieve a single document by ID
 router.get('/:id', async (req, res) => {
   try {
-    const document = await Document.findById(req.params.id); // Find document by ID
+    const document = await Document.findOne({ id: req.params.id }); // Find document by its 'id'
     if (!document) {
-      return res.status(404).json({ message: 'Document not found' });
+      return res.status(404).json({ message: 'Document not found.' });
     }
     res.status(200).json(document);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching document', error });
+    res.status(500).json({
+      message: 'An error occurred while fetching the document.',
+      error: error,
+    });
   }
 });
 
-// POST: Create a new document
+
+// POST: Add a new document
 router.post('/', async (req, res) => {
-  const newDocument = new Document(req.body); // Create a new Document instance
   try {
-    const savedDocument = await newDocument.save(); // Save document to database
-    res.status(201).json(savedDocument); // Return the saved document
+    const maxDocumentId = sequenceGenerator.nextId('documents');
+    const document = new Document({
+      id: maxDocumentId,
+      name: req.body.name,
+      url: req.body.url,
+      children: req.body.children || [], // Optional: Accept children if provided
+    });
+
+    const createdDocument = await document.save();
+    res.status(201).json({
+      message: 'Document added successfully',
+      document: createdDocument,
+    });
   } catch (error) {
-    res.status(400).json({ message: 'Error creating document', error });
+    res.status(500).json({
+      message: 'An error occurred while adding the document.',
+      error: error,
+    });
   }
 });
 
 // PUT: Update an existing document
 router.put('/:id', async (req, res) => {
   try {
-    const updatedDocument = await Document.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedDocument) {
-      return res.status(404).json({ message: 'Document not found' });
+    const document = await Document.findOne({ id: req.params.id });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Document not found.' });
     }
-    res.status(200).json(updatedDocument); // Return the updated document
+
+    document.name = req.body.name;
+    document.url = req.body.url;
+    document.children = req.body.children || []; // Update children if provided
+
+    const updatedDocument = await Document.updateOne({ id: req.params.id }, document);
+    res.status(204).json({
+      message: 'Document updated successfully',
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating document', error });
+    res.status(500).json({
+      message: 'An error occurred while updating the document.',
+      error: error,
+    });
   }
 });
 
-// DELETE: Delete a document
+// DELETE: Remove a document
 router.delete('/:id', async (req, res) => {
   try {
-    const deletedDocument = await Document.findByIdAndDelete(req.params.id);
-    if (!deletedDocument) {
-      return res.status(404).json({ message: 'Document not found' });
+    const document = await Document.findOne({ id: req.params.id });
+
+    if (!document) {
+      return res.status(404).json({ message: 'Document not found.' });
     }
-    res.status(200).json({ message: 'Document deleted', document: deletedDocument });
+
+    await Document.deleteOne({ id: req.params.id });
+    res.status(204).json({
+      message: 'Document deleted successfully',
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting document', error });
+    res.status(500).json({
+      message: 'An error occurred while deleting the document.',
+      error: error,
+    });
   }
 });
 

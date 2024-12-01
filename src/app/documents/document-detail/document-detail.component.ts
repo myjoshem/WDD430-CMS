@@ -10,11 +10,12 @@ import { WindRefService } from 'src/app/wind-ref.service';
   templateUrl: './document-detail.component.html',
   styleUrls: ['./document-detail.component.css'],
 })
-export class DocumentDetailComponent implements OnInit {
+export class DocumentDetailComponent implements OnInit, OnDestroy {
   document: Document;
   nativeWindow: any;
   id: string; // The id should be a string to match the unique document id
-  private routeSub: Subscription;
+  private routeSub: Subscription; // For subscribing to route changes
+  private documentSub: Subscription; // For subscribing to document fetches
 
   constructor(
     private documentService: DocumentService,
@@ -22,7 +23,7 @@ export class DocumentDetailComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router
   ) {
-    this.nativeWindow = windowRefService.getNativeWindow();
+    this.nativeWindow = this.windowRefService.getNativeWindow();
   }
 
   ngOnInit() {
@@ -30,18 +31,24 @@ export class DocumentDetailComponent implements OnInit {
     this.routeSub = this.route.params.subscribe((params: Params) => {
       this.id = params['id']; // Retrieve the unique id as a string from route params
 
-      // Fetch the document by its unique id (no need for incrementing)
-      this.document = this.documentService.getDocument(this.id);
-
-      // Log for debugging purposes
-      console.log('Document ID:', this.id, 'Fetched Document:', this.document);
+      // Fetch the document by its unique id
+      this.documentSub = this.documentService.getDocument(this.id).subscribe(
+        (fetchedDocument: Document) => {
+          this.document = fetchedDocument; // Assign the fetched document
+          console.log('Document fetched successfully:', this.document); // Debug log
+        },
+        (error) => {
+          console.error('Error fetching document:', error); // Handle errors
+        }
+      );
     });
   }
 
   onDelete() {
-    console.log('Document ID:', this.id, 'Fetched Document:', this.document);
-    this.documentService.deleteDocument(this.document);
-    this.router.navigate(['/documents']);
+    if (this.document) {
+      this.documentService.deleteDocument(this.document);
+      this.router.navigate(['/documents']);
+    }
   }
 
   onEditDocument() {
@@ -52,8 +59,18 @@ export class DocumentDetailComponent implements OnInit {
   }
 
   onView() {
-    if (this.document.url) {
+    if (this.document?.url) {
       this.nativeWindow.open(this.document.url);
+    }
+  }
+
+  ngOnDestroy() {
+    // Unsubscribe from all subscriptions to prevent memory leaks
+    if (this.routeSub) {
+      this.routeSub.unsubscribe();
+    }
+    if (this.documentSub) {
+      this.documentSub.unsubscribe();
     }
   }
 }

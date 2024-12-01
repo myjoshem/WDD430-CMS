@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser'); // Middleware to parse cookies in
 const logger = require('morgan'); // Middleware to log HTTP requests
 const mongoose = require('mongoose'); // MongoDB object modeling tool
 
+require('dotenv').config(); // Load environment variables
 // Import the routing file to handle the default (index) route
 const index = require('./server/routes/app');
 
@@ -17,12 +18,18 @@ const contacts = require('./server/routes/contacts');
 // Create an instance of Express
 const app = express();
 
-/* // MongoDB connection
-const MONGO_URL = process.env.MONGO_URL || 'mongodb://localhost:27017/cms';
-mongoose
-  .connect(MONGO_URL)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('MongoDB connection error:', err)); */
+// MongoDB connection
+const connectToDatabase = async () => {
+    try {
+      const MONGO_URL = process.env.MONGODB_URI;
+      await mongoose.connect(MONGO_URL);
+      console.log('Connected to MongoDB');
+    } catch (err) {
+      console.error('MongoDB connection error:', err);
+    }
+  };
+  
+  connectToDatabase();
 
 // Middleware for request parsing and logging
 app.use(express.json()); // Parses incoming JSON requests
@@ -68,4 +75,34 @@ const server = http.createServer(app);
 // Start the server and listen on the defined port
 server.listen(port, () => {
   console.log(`API running on localhost: ${port}`);
+
+ /*  //Quick Test
+  const Message = require('./server/models/message');
+const Contact = require('./server/models/contact');
+
+const testModels = async () => {
+  const contact = new Contact({
+    id: '3',
+    name: 'Test User',
+    email: 'test@example.com',
+    phone: '555-555-5555',
+    imageUrl: 'http://example.com/test.jpg'
+  });
+
+  await contact.save();
+  console.log('Contact saved:', contact);
+
+  const message = new Message({
+    id: '103',
+    subject: 'Test Subject',
+    msgText: 'Test message content',
+    sender: contact._id
+  });
+
+  await message.save();
+  console.log('Message saved:', message);
+};
+
+testModels(); */
+
 });
